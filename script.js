@@ -1,94 +1,146 @@
- function getParams() {
+function getParams() {
     const params = new URLSearchParams(window.location.search);
-    const nombre = params.get('nombre') ? decodeURIComponent(params.get('nombre').replace(/\+/g, ' ')) : '';
-    const pases = params.get('pases') || '';
+    const token = params.get('token') ? String(params.get('token')).trim() : ''; // Ahora buscamos el 'token'
 
     const mensajeBienvenida = document.querySelector(".mensaje-invitado");
-    if (mensajeBienvenida) {
-        if (nombre && pases) {
-             mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombre}</strong>!<br>Tienes asignados <strong>${pases}</strong> pase(s).`;
-        } else {
-             mensajeBienvenida.innerHTML = `¡Hola!<br>Por favor, usa el enlace de invitación completo.`;
-        }
+    const whatsappButton = document.getElementById('whatsappButton');
+    const originalButtonText = whatsappButton ? whatsappButton.textContent : '';
+
+    if (!whatsappButton) {
+        console.error("Botón de WhatsApp no encontrado.");
+        return;
     }
 
-    const whatsappButton = document.getElementById('whatsappButton');
-    if (whatsappButton) {
-        if (!nombre || !pases) {
-            whatsappButton.disabled = true;
-            whatsappButton.textContent = "Faltan datos en la URL para confirmar";
-            return;
+    if (!token) {
+        // Si no hay token, el botón se deshabilita y se muestra un mensaje genérico.
+        whatsappButton.disabled = true;
+        whatsappButton.textContent = "Enlace de invitación no válido.";
+        if (mensajeBienvenida) {
+            mensajeBienvenida.innerHTML = `¡Hola!<br>Por favor, usa el enlace de invitación completo y válido.`;
+        }
+        return; // Salimos de la función si no hay token
+    }
+
+    // Al cargar la página, se intenta validar el token y obtener los datos
+    // para mostrar el mensaje de bienvenida
+    (async () => { // Usamos una IIFE (Immediately Invoked Function Expression) asíncrona
+        whatsappButton.disabled = true; // Deshabilita el botón mientras se valida el token
+        whatsappButton.textContent = "Cargando invitación...";
+        if (mensajeBienvenida) {
+            mensajeBienvenida.textContent = "Verificando tu invitación...";
         }
 
-        const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
-        const mensajeURLCodificado = encodeURIComponent(mensajeWhatsApp);
-        const whatsappLink = `https://wa.me/+5118116611984?text=${mensajeURLCodificado}`;
+        try {
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMngei0mui95skKNVop9kzvuvr44a6AKLI998CTnFKTLeV5OJmoa5pZNcI7iY4VrNw/exec'; // ¡TU URL de Apps Script!
+            const requestUrl = `${WEB_APP_URL}?token=${encodeURIComponent(token)}`; // Enviamos solo el token
 
-        // Asegúrate de que esta URL sea la correcta de tu despliegue de Apps Script
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzqDRwSmGHL0o16V4IjKRWVIKX1RPx9pcChsfKMPMKAq3weUzd7SEfTewu2i55kPg3U/exec'; // <--- ¡Tu URL actual de Apps Script!
+            const response = await fetch(requestUrl, {
+                method: 'GET',
+            });
 
-        whatsappButton.onclick = async () => {
-            whatsappButton.disabled = true; // Deshabilita al inicio de la acción
-            const originalText = whatsappButton.textContent; // Guarda el texto original
-            whatsappButton.textContent = "Confirmando..."; // Muestra un mensaje de carga
+            const result = await response.json(); // Leemos la respuesta JSON
 
-            try {
-                const dataToSend = {
-                    nombre: nombre,
-                    pases: pases
-                };
-                const encodedData = encodeURIComponent(JSON.stringify(dataToSend));
-                const requestUrl = `${WEB_APP_URL}?data=${encodedData}`;
+            if (result.success) {
+                const nombreInvitado = result.data.nombre || 'Invitado';
+                const pasesAsignados = result.data.pases || '0';
 
-                const response = await fetch(requestUrl, {
-                    method: 'GET',
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert('¡Confirmación exitosa! ' + result.message);
-                    window.open(whatsappLink, '_blank');
-                    // --- NUEVOS CAMBIOS AQUÍ ---
-                    whatsappButton.textContent = "ASISTENCIA CONFIRMADA"; // Cambia el texto
-                    whatsappButton.disabled = true; // Asegura que permanezca deshabilitado
-                    whatsappButton.style.backgroundColor = '#4CAF50'; // Opcional: Cambia color a verde
-                    whatsappButton.style.cursor = 'not-allowed'; // Opcional: Cambia cursor
-                    // --- FIN NUEVOS CAMBIOS ---
-                } else {
-                    alert('Error en la confirmación: ' + result.message);
-                    console.error('Error del Apps Script:', result.message);
-                    whatsappButton.textContent = originalText; // Restaura el texto
-                    whatsappButton.disabled = false; // Vuelve a habilitar para que pueda reintentar
+                if (mensajeBienvenida) {
+                    mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombreInvitado}</strong>!<br>Tienes asignados <strong>${pasesAsignados}</strong> pase(s).`;
                 }
 
-            } catch (error) {
-                console.error('Error al enviar el registro o procesar la respuesta:', error);
-                alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
-                whatsappButton.textContent = originalText;
-                whatsappButton.disabled = false;
+                // Si ya estaba confirmado (pero result.success es true), mostrarlo y deshabilitar
+                if (result.message.includes("Ya has confirmado")) {
+                    whatsappButton.textContent = "ASISTENCIA YA CONFIRMADA";
+                    whatsappButton.disabled = true;
+                    whatsappButton.style.backgroundColor = '#FFC107'; // Color de advertencia
+                    whatsappButton.style.cursor = 'not-allowed';
+                    alert(result.message); // Muestra el mensaje informativo del servidor
+                } else {
+                    // Si es una invitación pendiente y válida, habilitar el botón de confirmar
+                    whatsappButton.textContent = originalButtonText; // Restaura el texto original
+                    whatsappButton.disabled = false;
+
+                    // Adjuntar el evento click del botón SOLAMENTE si el token es válido y pendiente
+                    whatsappButton.onclick = async () => {
+                        whatsappButton.disabled = true;
+                        whatsappButton.textContent = "Confirmando...";
+
+                        try {
+                            // Re-hacemos la misma petición GET al Apps Script,
+                            // porque la primera fue para "validar y obtener datos",
+                            // y esta segunda es para "confirmar y registrar"
+                            // El script de Apps Script ya sabe que si el token es pendiente, lo confirmará.
+                            const confirmResponse = await fetch(requestUrl, { // Usamos la misma URL
+                                method: 'GET',
+                            });
+                            const confirmResult = await confirmResponse.json();
+
+                            if (confirmResult.success) {
+                                alert('¡Confirmación exitosa! ' + confirmResult.message);
+                                const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombreInvitado} y tengo ${pasesAsignados} pases.`;
+                                const mensajeURLCodificado = encodeURIComponent(mensajeWhatsApp);
+                                const whatsappLink = `https://wa.me/+5218116611984?text=${mensajeURLCodificado}`;
+                                window.open(whatsappLink, '_blank');
+                                whatsappButton.textContent = "ASISTENCIA CONFIRMADA";
+                                whatsappButton.style.backgroundColor = '#4CAF50';
+                                whatsappButton.style.cursor = 'not-allowed';
+                            } else {
+                                alert('Error al confirmar: ' + confirmResult.message);
+                                console.error('Error del Apps Script:', confirmResult.message);
+                                whatsappButton.textContent = originalButtonText;
+                                whatsappButton.disabled = false;
+                            }
+                        } catch (confirmError) {
+                            console.error('Error al enviar la confirmación:', confirmError);
+                            alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
+                            whatsappButton.textContent = originalButtonText;
+                            whatsappButton.disabled = false;
+                        }
+                    };
+                }
+
+            } else {
+                // Si el Apps Script devuelve success: false (token no encontrado/inválido)
+                if (mensajeBienvenida) {
+                    mensajeBienvenida.innerHTML = `Lo sentimos.<br>${result.message}`;
+                }
+                whatsappButton.textContent = "Enlace no válido";
+                whatsappButton.disabled = true;
+                whatsappButton.style.backgroundColor = '#F44336'; // Color rojo para error
+                whatsappButton.style.cursor = 'not-allowed';
+                alert('Error: ' + result.message);
             }
-        };
-    }
+
+        } catch (error) {
+            console.error('Error de red o procesamiento:', error);
+            alert('No se pudo verificar la invitación. Por favor, revisa tu conexión a internet e inténtalo de nuevo.');
+            if (mensajeBienvenida) {
+                mensajeBienvenida.innerHTML = `Error al cargar.<br>Por favor, revisa tu conexión.`;
+            }
+            whatsappButton.textContent = "Error al cargar";
+            whatsappButton.disabled = true;
+        }
+    })(); // Invocamos la función asíncrona inmediatamente
 }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        getParams();
+document.addEventListener("DOMContentLoaded", function () {
+    getParams();
 
-        const reveals = document.querySelectorAll(".reveal");
-        const observer = new IntersectionObserver(
-            entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("visible");
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            { threshold: 0.1 }
-        );
+    // ... (Tu código para las animaciones reveal) ...
+    const reveals = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.1 }
+    );
 
-        reveals.forEach(section => {
-            observer.observe(section);
-        });
+    reveals.forEach(section => {
+        observer.observe(section);
     });
+});
