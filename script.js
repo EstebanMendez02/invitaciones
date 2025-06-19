@@ -31,7 +31,7 @@ function getParams() {
         }
 
         try {
-            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMngei0mui95skKNVop9kzvuvr44a6AKLI998CTnFKTLeV5OJmoa5pZNcI7iY4VrNw/exec'; // ¡TU URL de Apps Script!
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxUQVuTbMsu6YT33zxtFTG6ak7E0_MK9xDPMP6uOrObX0T-OlLKoM7E-nGWpEHdkl5w/exec'; // ¡TU URL de Apps Script!
             const requestUrl = `${WEB_APP_URL}?token=${encodeURIComponent(token)}`; // Enviamos solo el token
 
             const response = await fetch(requestUrl, {
