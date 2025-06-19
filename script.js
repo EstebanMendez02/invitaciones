@@ -22,10 +22,10 @@
 
         const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
         const mensajeURLCodificado = encodeURIComponent(mensajeWhatsApp);
-        const whatsappLink = `https://wa.me/?text=${mensajeURLCodificado}`;
+        const whatsappLink = `https://wa.me/+5118116611984?text=${mensajeURLCodificado}`;
 
         // Asegúrate de que esta URL sea la correcta de tu despliegue de Apps Script
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMngei0mui95skKNVop9kzvuvr44a6AKLI998CTnFKTLeV5OJmoa5pZNcI7iY4VrNw/exec'; // <--- ¡Tu URL actual de Apps Script!
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzqDRwSmGHL0o16V4IjKRWVIKX1RPx9pcChsfKMPMKAq3weUzd7SEfTewu2i55kPg3U/exec'; // <--- ¡Tu URL actual de Apps Script!
 
         whatsappButton.onclick = async () => {
             whatsappButton.disabled = true; // Deshabilita al inicio de la acción
