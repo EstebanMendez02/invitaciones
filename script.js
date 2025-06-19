@@ -1,11 +1,10 @@
   function getParams() {
     const params = new URLSearchParams(window.location.search);
-    const nombre = params.get('nombre') || ''; // No asignar 'Invitado' por defecto aquí para validación
-    const pases = params.get('pases') || '';   // No asignar '0' por defecto aquí para validación
+    const nombre = params.get('nombre') ? decodeURIComponent(params.get('nombre').replace(/\+/g, ' ')) : ''; // Decodificar correctamente espacios
+    const pases = params.get('pases') || '';
 
     const mensajeBienvenida = document.querySelector(".mensaje-invitado");
     if (mensajeBienvenida) {
-        // Muestra el nombre y pases si existen en la URL, de lo contrario, deja un mensaje genérico
         if (nombre && pases) {
              mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombre}</strong>!<br>Tienes asignados <strong>${pases}</strong> pase(s).`;
         } else {
@@ -15,52 +14,51 @@
 
     const whatsappButton = document.getElementById('whatsappButton');
     if (whatsappButton) {
-        // Deshabilita el botón si no hay nombre o pases en la URL para evitar confirmaciones incompletas
         if (!nombre || !pases) {
             whatsappButton.disabled = true;
             whatsappButton.textContent = "Faltan datos en la URL para confirmar";
-            return; // Salir de la función si no hay datos
+            return;
         }
 
         const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
         const mensajeURLCodificado = encodeURIComponent(mensajeWhatsApp);
-        const whatsappLink = `https://wa.me/+5218116611984?text=${mensajeURLCodificado}`;
+        const whatsappLink = `https://wa.me/?text=${mensajeURLCodificado}`;
 
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMngei0mui95skKNVop9kzvuvr44a6AKLI998CTnFKTLeV5OJmoa5pZNcI7iY4VrNw/exec'; // <--- ¡IMPORTANTE! Tu URL de Apps Script
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzqDRwSmGHL0o16V4IjKRWVIKX1RPx9pcChsfKMPMKAq3weUzd7SEfTewu2i55kPg3U/exec'; // <--- ¡Tu URL actual de Apps Script!
 
-        whatsappButton.onclick = async () => { // Usamos 'async' para poder usar 'await'
-
-            // Deshabilita el botón temporalmente para evitar múltiples clics
+        whatsappButton.onclick = async () => {
             whatsappButton.disabled = true;
             const originalText = whatsappButton.textContent;
             whatsappButton.textContent = "Confirmando...";
 
             try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    // mode: 'cors', // Modo por defecto, que permite leer la respuesta
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        nombre: nombre,
-                        pases: pases
-                    })
+                // Preparamos los datos para enviarlos en la URL
+                const dataToSend = {
+                    nombre: nombre,
+                    pases: pases
+                };
+                // Convertimos el objeto a una cadena JSON y la codificamos para la URL
+                const encodedData = encodeURIComponent(JSON.stringify(dataToSend));
+                // Construimos la URL de la petición GET con los datos como parámetro 'data'
+                const requestUrl = `${WEB_APP_URL}?data=${encodedData}`;
+
+                const response = await fetch(requestUrl, {
+                    method: 'GET', // Cambiamos el método a GET
+                    // No necesitamos headers ni body para GET con query params
                 });
 
-                const result = await response.json(); // Lee la respuesta JSON del Apps Script
+                const result = await response.json(); // Leemos la respuesta JSON
 
                 if (result.success) {
                     alert('¡Confirmación exitosa! ' + result.message);
-                    // Abre WhatsApp solo si la confirmación fue exitosa en la hoja
                     window.open(whatsappLink, '_blank');
                     whatsappButton.textContent = "Confirmado y WhatsApp Abierto";
-                    // Podrías deshabilitar el botón permanentemente si ya confirmó
+                    // Puedes añadir aquí lógica para deshabilitar el botón permanentemente
                 } else {
                     alert('Error en la confirmación: ' + result.message);
                     console.error('Error del Apps Script:', result.message);
-                    whatsappButton.textContent = originalText; // Restaurar texto si hubo error
-                    whatsappButton.disabled = false; // Habilitar de nuevo para reintentar
+                    whatsappButton.textContent = originalText;
+                    whatsappButton.disabled = false;
                 }
 
             } catch (error) {
