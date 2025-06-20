@@ -74,7 +74,7 @@ async function initializeInvitationPage() {
         }
 
         const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
-        const whatsappLink = `https://wa.me/?text=${encodeURIComponent(mensajeWhatsApp)}`;
+        const whatsappLink = `https://wa.me/+528311077948?text=${encodeURIComponent(mensajeWhatsApp)}`;
 
         whatsappButton.onclick = async () => {
             whatsappButton.disabled = true;
