@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invitación XV Sofía</title>
     <link rel="stylesheet" href="styles.css" />
-    </head>
+</head>
 <body>
+
     <header class="reveal">
-        <img src="header.png" alt="XV Sofía" class="header-image" />
+        <img src="images/header.png" alt="XV Sofía" class="header-image" />
         <h1>XV Sofía</h1>
         <p>¡Estás invitado!<br>15 de Julio de 2025</p>
     </header>
@@ -17,22 +18,32 @@
         <h2>Detalles del Evento</h2>
         <div class="grid-detalles">
             <div class="detalle">
-                <img src="ceremonia.png" alt="Ceremonia" />
+                <img src="images/ceremonia.png" alt="Ceremonia" />
                 <p><strong>Ceremonia:</strong><br>5:00 p.m.<br>Parroquia Santa María</p>
             </div>
             <div class="detalle">
-                <img src="recepcion.png" alt="Recepción" />
+                <img src="images/recepcion.png" alt="Recepción" />
                 <p><strong>Recepción:</strong><br>7:00 p.m.<br>Salón Jardín Real</p>
             </div>
             <div class="detalle">
-                <img src="direccion.png" alt="Dirección" />
+                <img src="images/direccion.png" alt="Dirección" />
                 <p><strong>Dirección:</strong><br>Av. Central #456<br>Ciudad de México</p>
             </div>
         </div>
     </section>
 
     <section class="reveal" id="invitado">
-        <p class="mensaje-invitado"></p> <button id="whatsappButton" class="boton">Confirmar Asistencia</button>
+        <p class="mensaje-invitado"></p>
+        <button id="whatsappButton" class="boton">Confirmar Asistencia</button>
+        <p></p>
+        <button id="acceptLessButton" class="boton secondary-button">Aceptar menos invitaciones</button>
+        <p></p>
+        <button id="declineButton" class="boton decline-button">No podré asistir</button> 
+        <div id="lessPassesContainer" style="display: none; margin-top: 15px;">
+            <p>¿Cuántos pases confirmas (máximo <span id="maxPasesDisplay"></span>)?</p>
+            <input type="number" id="numPasesInput" min="1" value="1" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc; width: 100px; text-align: center;">
+            <button id="confirmLessPassesButton" class="boton small-button">Confirmar pases seleccionados</button>
+        </div>
     </section>
 
     <section class="reveal">
@@ -42,7 +53,7 @@
 
     <section class="reveal">
         <h2>¿Cómo llegar?</h2>
-        <img src="mapa.png" alt="Mapa" class="section-image" />
+        <img src="images/mapa.png" alt="Mapa" class="section-image" />
     </section>
 
     <footer class="reveal">
@@ -50,5 +61,6 @@
     </footer>
 
     <script src="script.js"></script>
+
 </body>
 </html>
