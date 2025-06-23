@@ -1,7 +1,15 @@
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyB99OcwK-8XxfVrxV3zmW9QAVI3IRKTGynEjJzZ-1R-uor625jwKKa7jbigk4K60X5/exec'; // <--- ¡Tu URL de despliegue de Apps Script!
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAEW4-W2VXfj1qSzn9cxMs8Cg23sC7GdHUN5L9PVPNjuQdJbZvFM8hBVS6iR_8VViKzg/exec'; // <--- ¡Tu URL de despliegue de Apps Script!
 
-async function getGuestInfoByt(t) {
-    const requestUrl = `${WEB_APP_URL}?fetch_info_t=${encodeURIComponent(t)}`;
+let currentGuestName = '';
+let currentAssignedPases = 0;
+
+function getUuidFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('t') ? params.get('t').trim() : '';
+}
+
+async function getGuestInfoByToken(token) {
+    const requestUrl = `${WEB_APP_URL}?t=${encodeURIComponent(token)}`;
     try {
         const response = await fetch(requestUrl);
         const result = await response.json();
@@ -9,7 +17,7 @@ async function getGuestInfoByt(t) {
             return {
                 nombre: result.nombre,
                 pases: result.pases,
-                estado: result.estado // 'PENDIENTE' o 'CONFIRMADO'
+                estado: result.estado
             };
         } else {
             console.error('Error al obtener info del invitado:', result.message);
@@ -22,101 +30,328 @@ async function getGuestInfoByt(t) {
 }
 
 async function initializeInvitationPage() {
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get('t') ? params.get('t').trim() : ''; // Esperamos 't' en la URL
+    const token = getUuidFromUrl();
 
     const mensajeBienvenida = document.querySelector(".mensaje-invitado");
     const whatsappButton = document.getElementById('whatsappButton');
+    const acceptLessButton = document.getElementById('acceptLessButton');
+    const declineButton = document.getElementById('declineButton');
+    const lessPassesContainer = document.getElementById('lessPassesContainer');
+    const numPasesInput = document.getElementById('numPasesInput');
+    const confirmLessPassesButton = document.getElementById('confirmLessPassesButton');
 
-    if (!t) {
+    // Función auxiliar para gestionar la visibilidad y estado de los botones de acción
+    function manageActionButtons(actionType, message = "", newColor = '') {
+        // Oculta el contenedor de pases por defecto en la mayoría de los casos
+        if (lessPassesContainer) lessPassesContainer.style.display = 'none';
+
+        // Oculta todos los botones al principio para luego mostrar solo los relevantes
+        const allMainButtons = [whatsappButton, acceptLessButton, declineButton];
+        allMainButtons.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        if (confirmLessPassesButton) confirmLessPassesButton.style.display = 'none'; // También ocultamos este por defecto
+
+        // Reiniciar estilos y estado de deshabilitado
+        [whatsappButton, acceptLessButton, declineButton, confirmLessPassesButton].forEach(btn => {
+            if (btn) {
+                btn.disabled = false;
+                btn.style.cursor = 'pointer';
+                btn.style.backgroundColor = ''; // Restablecer color
+                // Restablecer texto original si no se proporciona un mensaje específico
+                if (!message) {
+                    if (btn.id === 'whatsappButton') btn.textContent = "Confirmar Asistencia";
+                    if (btn.id === 'acceptLessButton') btn.textContent = "Aceptar menos invitaciones";
+                    if (btn.id === 'declineButton') btn.textContent = "No podré asistir";
+                    if (btn.id === 'confirmLessPassesButton') btn.textContent = "Confirmar pases seleccionados";
+                }
+            }
+        });
+
+
+        switch (actionType) {
+            case 'initialLoad':
+                // Muestra solo los botones principales al cargar la página por primera vez
+                allMainButtons.forEach(btn => {
+                    if (btn) btn.style.display = 'inline-block';
+                });
+                // Limpiar mensaje cordial previo
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = "";
+                break;
+
+            case 'processing':
+                // Deshabilita todos los botones principales y muestra el mensaje de carga
+                allMainButtons.forEach(btn => {
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.style.cursor = 'not-allowed';
+                        btn.style.backgroundColor = newColor;
+                        if (btn.id === 'whatsappButton' || btn.id === 'acceptLessButton' || btn.id === 'declineButton') {
+                            btn.style.display = 'inline-block'; // Mantener visible el botón que se está procesando o el general
+                            if (btn.id === 'whatsappButton' || btn.id === 'declineButton') { // Solo actualiza el texto del botón presionado
+                                btn.textContent = message;
+                            }
+                        }
+                    }
+                });
+                if (confirmLessPassesButton) confirmLessPassesButton.style.display = 'none'; // Asegurarse que esté oculto si no es el proceso de menos pases
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = ""; // Limpiar mensaje cordial
+                break;
+
+            case 'showLessPassesInput':
+                // Oculta los botones principales y muestra el input de pases
+                allMainButtons.forEach(btn => {
+                    if (btn) btn.style.display = 'none';
+                });
+                if (lessPassesContainer) lessPassesContainer.style.display = 'block';
+                if (confirmLessPassesButton) confirmLessPassesButton.style.display = 'inline-block';
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = ""; // Limpiar mensaje cordial
+                break;
+
+            case 'processingLessPasses':
+                 // Deshabilita el botón de confirmar pases seleccionados
+                if (confirmLessPassesButton) {
+                    confirmLessPassesButton.disabled = true;
+                    confirmLessPassesButton.style.cursor = 'not-allowed';
+                    confirmLessPassesButton.style.backgroundColor = newColor;
+                    confirmLessPassesButton.textContent = message;
+                    confirmLessPassesButton.style.display = 'inline-block'; // Asegurarse de que el botón siga visible
+                }
+                if (lessPassesContainer) lessPassesContainer.style.display = 'block'; // Asegurarse que el contenedor siga visible
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = ""; // Limpiar mensaje cordial
+                break;
+
+            case 'finalStateConfirmed':
+                // Muestra solo el botón de WhatsApp con el estado final
+                if (whatsappButton) {
+                    whatsappButton.disabled = true;
+                    whatsappButton.style.cursor = 'not-allowed';
+                    whatsappButton.style.backgroundColor = newColor;
+                    whatsappButton.textContent = message;
+                    whatsappButton.style.display = 'inline-block';
+                }
+                // Mostrar mensaje cordial de confirmación
+                if (mensajeBienvenida) {
+                    mensajeBienvenida.nextElementSibling.innerHTML = `<p style="color: green; font-weight: bold;">¡Excelente! Nos vemos en la fiesta.</p>`;
+                }
+                break;
+
+            case 'finalStateDeclined':
+                // Muestra solo el botón de declinación con el estado final
+                if (declineButton) {
+                    declineButton.disabled = true;
+                    declineButton.style.cursor = 'not-allowed';
+                    declineButton.style.backgroundColor = newColor;
+                    declineButton.textContent = message;
+                    declineButton.style.display = 'inline-block';
+                }
+                // Mostrar mensaje cordial de declinación
+                if (mensajeBienvenida) {
+                    mensajeBienvenida.nextElementSibling.innerHTML = `<p style="color: red; font-weight: bold;">¡Lamentamos que no puedas asistir! Gracias por avisar.</p>`;
+                }
+                break;
+
+            case 'errorState':
+                // Si hay un error, restaurar los botones principales a su estado original
+                allMainButtons.forEach(btn => {
+                    if (btn) btn.style.display = 'inline-block';
+                });
+                // Restaurar texto original de los botones
+                if (whatsappButton) whatsappButton.textContent = "Confirmar Asistencia";
+                if (acceptLessButton) acceptLessButton.textContent = "Aceptar menos invitaciones";
+                if (declineButton) declineButton.textContent = "No podré asistir";
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = ""; // Limpiar mensaje cordial
+                break;
+
+            case 'invalidLink':
+                // Ocultar todos los botones y mostrar solo un mensaje si el link es inválido
+                [whatsappButton, acceptLessButton, declineButton, confirmLessPassesButton].forEach(btn => {
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.style.cursor = 'not-allowed';
+                        btn.style.backgroundColor = newColor;
+                        btn.style.display = 'none'; // Ocultar todos los botones
+                    }
+                });
+                if (mensajeBienvenida) mensajeBienvenida.nextElementSibling.innerHTML = ""; // Limpiar mensaje cordial
+                // El mensaje principal ya se maneja en el if (!token) o !guestInfo
+                break;
+        }
+    }
+
+
+    if (!token) {
         if (mensajeBienvenida) {
             mensajeBienvenida.innerHTML = `¡Hola!<br>El enlace de invitación es incorrecto o está incompleto.`;
         }
-        if (whatsappButton) {
-            whatsappButton.disabled = true;
-            whatsappButton.textContent = "Enlace inválido";
-            whatsappButton.style.backgroundColor = '#999'; // Color gris
-            whatsappButton.style.cursor = 'not-allowed';
-        }
-        return; // Detener ejecución si no hay t
+        manageActionButtons('invalidLink', "Enlace inválido", '#999');
+        return;
     }
 
-    // Paso 1: Obtener la información del invitado usando el t
-    const guestInfo = await getGuestInfoByt(t);
+    const guestInfo = await getGuestInfoByToken(token);
 
     if (!guestInfo) {
         if (mensajeBienvenida) {
             mensajeBienvenida.innerHTML = `¡Hola!<br>No pudimos encontrar tu invitación. Por favor, verifica el enlace.`;
         }
-        if (whatsappButton) {
-            whatsappButton.disabled = true;
-            whatsappButton.textContent = "Invitación no encontrada";
-            whatsappButton.style.backgroundColor = '#999';
-            whatsappButton.style.cursor = 'not-allowed';
-        }
-        return; // Detener ejecución si no se encontró información
+        manageActionButtons('invalidLink', "Invitación no encontrada", '#999');
+        return;
     }
 
     const { nombre, pases, estado } = guestInfo;
+    currentGuestName = nombre;
+    currentAssignedPases = pases;
 
     if (mensajeBienvenida) {
         mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombre}</strong>!<br>Tienes asignados <strong>${pases}</strong> pase(s).`;
     }
 
-    // Configurar el botón de WhatsApp
-    if (whatsappButton) {
-        if (estado === 'CONFIRMADO') {
-            whatsappButton.textContent = "ASISTENCIA CONFIRMADA";
-            whatsappButton.disabled = true;
-            whatsappButton.style.backgroundColor = '#4CAF50'; // Verde
-            whatsappButton.style.cursor = 'not-allowed';
-            return; // No configurar el onclick si ya está confirmado
-        }
+    // Añado un div o span vacío justo después de mensajeBienvenida para el mensaje cordial
+    // Si ya existe, lo usamos, si no, lo creamos.
+    let cordialMessageContainer = mensajeBienvenida.nextElementSibling;
+    if (!cordialMessageContainer || !cordialMessageContainer.classList.contains('cordial-message')) {
+        cordialMessageContainer = document.createElement('div');
+        cordialMessageContainer.classList.add('cordial-message');
+        mensajeBienvenida.parentNode.insertBefore(cordialMessageContainer, mensajeBienvenida.nextSibling);
+    }
+    cordialMessageContainer.innerHTML = ""; // Limpiar en cada carga
 
-        const mensajeWhatsApp = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
-        const whatsappLink = `https://wa.me/528311103028?text=${encodeURIComponent(mensajeWhatsApp)}`;
+    // Actualizar el valor máximo en el input y mostrarlo en el span
+    if (numPasesInput) {
+        numPasesInput.max = pases;
+        numPasesInput.value = pases;
+    }
+    const maxPasesDisplay = document.getElementById('maxPasesDisplay');
+    if (maxPasesDisplay) {
+        maxPasesDisplay.textContent = pases;
+    }
+
+    // Si ya está CONFIRMADO o RECHAZADA, ajusta los botones al estado final y muestra el mensaje cordial
+    if (estado === 'CONFIRMADO') {
+        manageActionButtons('finalStateConfirmed', "ASISTENCIA CONFIRMADA", '#4CAF50'); // Verde
+        if (cordialMessageContainer) {
+            cordialMessageContainer.innerHTML = `<p style="color: green; font-weight: bold;">¡Excelente! Nos vemos en la fiesta.</p>`;
+        }
+        return;
+    } else if (estado === 'RECHAZADA') {
+        manageActionButtons('finalStateDeclined', "ASISTENCIA RECHAZADA", '#f44336'); // Rojo
+        if (cordialMessageContainer) {
+            cordialMessageContainer.innerHTML = `<p style="color: red; font-weight: bold;">¡Lamentamos que no puedas asistir! Gracias por avisar.</p>`;
+        }
+        return;
+    }
+
+    // Si no ha respondido aún, inicializa los botones principales
+    manageActionButtons('initialLoad');
+
+
+    // Configurar el botón de Confirmar Asistencia (todos los pases)
+    if (whatsappButton) {
+        const mensajeWhatsAppFull = `Confirmo mi asistencia a los XV de Sofia. Soy ${nombre} y tengo ${pases} pases.`;
+        const whatsappLinkFull = `https://wa.me/?text=${encodeURIComponent(mensajeWhatsAppFull)}`;
 
         whatsappButton.onclick = async () => {
-            whatsappButton.disabled = true;
-            const originalText = whatsappButton.textContent;
-            whatsappButton.textContent = "Confirmando...";
-
+            manageActionButtons('processing', "Confirmando...", '#FFA500'); // Naranja temporal
             try {
-                // Paso 2: Enviar el t para la confirmación
-                const requestUrl = `${WEB_APP_URL}?t=${encodeURIComponent(t)}`; // Solo enviamos el t
+                const requestUrl = `${WEB_APP_URL}?t=${encodeURIComponent(token)}&confirm=true`;
 
-                const response = await fetch(requestUrl, {
-                    method: 'GET', // Usamos GET como tu configuración actual
-                });
-
+                const response = await fetch(requestUrl, { method: 'GET' });
                 const result = await response.json();
 
                 if (result.success) {
                     alert('¡Confirmación exitosa! ' + result.message);
-                    window.open(whatsappLink, '_blank');
-                    whatsappButton.textContent = "ASISTENCIA CONFIRMADA";
-                    whatsappButton.disabled = true;
-                    whatsappButton.style.backgroundColor = '#4CAF50';
-                    whatsappButton.style.cursor = 'not-allowed';
+                    window.open(whatsappLinkFull, '_blank');
+                    manageActionButtons('finalStateConfirmed', "ASISTENCIA CONFIRMADA", '#4CAF50'); // Verde
                 } else {
                     alert('Error en la confirmación: ' + result.message);
                     console.error('Error del Apps Script:', result.message);
-                    whatsappButton.textContent = originalText;
-                    whatsappButton.disabled = false;
+                    manageActionButtons('errorState'); // Restaurar botones a estado original
                 }
-
             } catch (error) {
                 console.error('Error al enviar el registro o procesar la respuesta:', error);
                 alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
-                whatsappButton.textContent = originalText;
-                whatsappButton.disabled = false;
+                manageActionButtons('errorState'); // Restaurar botones a estado original
+            }
+        };
+    }
+
+    // Configurar el botón "Aceptar menos invitaciones"
+    if (acceptLessButton) {
+        acceptLessButton.onclick = () => {
+            manageActionButtons('showLessPassesInput'); // Nueva acción para mostrar el input de pases
+            if (numPasesInput) {
+                numPasesInput.value = currentAssignedPases;
+                numPasesInput.min = 1;
+                numPasesInput.max = currentAssignedPases;
+            }
+        };
+    }
+
+    // Configurar el botón "Confirmar pases seleccionados"
+    if (confirmLessPassesButton) {
+        confirmLessPassesButton.onclick = async () => {
+            const confirmedPases = parseInt(numPasesInput.value, 10);
+
+            if (isNaN(confirmedPases) || confirmedPases < 1 || confirmedPases > currentAssignedPases) {
+                alert(`Por favor, ingresa un número válido de pases entre 1 y ${currentAssignedPases}.`);
+                return;
+            }
+
+            manageActionButtons('processingLessPasses', "Confirmando...", '#FFA500'); // Naranja temporal
+
+            try {
+                const requestUrl = `${WEB_APP_URL}?t=${encodeURIComponent(token)}&confirm_less=true&pases_confirmados=${confirmedPases}`;
+
+                const response = await fetch(requestUrl, { method: 'GET' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('¡Confirmación exitosa! ' + result.message);
+                    const mensajeWhatsAppLess = `Confirmo mi asistencia a los XV de Sofia. Soy ${currentGuestName} y confirmo ${confirmedPases} pases.`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(mensajeWhatsAppLess)}`, '_blank');
+                    manageActionButtons('finalStateConfirmed', "ASISTENCIA CONFIRMADA", '#4CAF50'); // Verde
+                } else {
+                    alert('Error en la confirmación: ' + result.message);
+                    console.error('Error del Apps Script:', result.message);
+                    manageActionButtons('errorState'); // Restaurar botones a estado original
+                }
+            } catch (error) {
+                console.error('Error al enviar el registro o procesar la respuesta:', error);
+                alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
+                manageActionButtons('errorState'); // Restaurar botones a estado original
+            }
+        };
+    }
+
+    // Configurar el botón "No podré asistir"
+    if (declineButton) {
+        declineButton.onclick = async () => {
+            manageActionButtons('processing', "Registrando declinación...", '#FFCC00'); // Amarillo temporal
+            try {
+                const requestUrl = `${WEB_APP_URL}?t=${encodeURIComponent(token)}&decline=true`;
+
+                const response = await fetch(requestUrl, { method: 'GET' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('¡Gracias! Tu declinación ha sido registrada. ' + result.message);
+                    manageActionButtons('finalStateDeclined', "ASISTENCIA RECHAZADA", '#f44336'); // Rojo
+                } else {
+                    alert('Error al registrar la declinación: ' + result.message);
+                    console.error('Error del Apps Script:', result.message);
+                    manageActionButtons('errorState'); // Restaurar botones a estado original
+                }
+            } catch (error) {
+                console.error('Error de red al registrar la declinación:', error);
+                alert('Ocurrió un error inesperado al intentar registrar tu declinación. Por favor, inténtalo de nuevo.');
+                manageActionButtons('errorState'); // Restaurar botones a estado original
             }
         };
     }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    initializeInvitationPage(); // Llama a la nueva función de inicialización
+    initializeInvitationPage();
 
     const reveals = document.querySelectorAll(".reveal");
     const observer = new IntersectionObserver(
@@ -130,7 +365,6 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         { threshold: 0.1 }
     );
-
     reveals.forEach(section => {
         observer.observe(section);
     });
