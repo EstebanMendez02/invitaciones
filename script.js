@@ -202,8 +202,19 @@ async function initializeInvitationPage() {
     currentGuestName = nombre;
     currentAssignedPases = pases;
 
+    // Mostrar nombre y pases en elementos visibles del HTML
+    const nombreSpan1 = document.getElementById("nombreInvitado");
+    if (nombreSpan1) nombreSpan1.textContent = nombre;
+
+    const nombreSpan2 = document.getElementById("nombreConfirmacion");
+    if (nombreSpan2) nombreSpan2.textContent = nombre;
+
+    const pasesSpan = document.getElementById("pases");
+    if (pasesSpan) pasesSpan.textContent = pases;
+
+
     if (mensajeBienvenida) {
-        mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombre}</strong>!<br>Tienes asignados <strong>${pases}</strong> pase(s).`;
+        mensajeBienvenida.innerHTML = `¡Hola, <strong>${nombre}</strong>!<br>Tu invitación es para <strong>${pases}</strong> adulto(s).`;
     }
 
     // Añado un div o span vacío justo después de mensajeBienvenida para el mensaje cordial
@@ -368,4 +379,4 @@ document.addEventListener("DOMContentLoaded", function () {
     reveals.forEach(section => {
         observer.observe(section);
     });
-});
+});// El script.js se mantiene sin cambios desde Versión 3 a Versión 8
