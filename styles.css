@@ -82,10 +82,84 @@ footer {
 .reveal {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition: opacity 3s ease-out, transform 0.6s ease-out;
 }
 
 .reveal.visible {
     opacity: 1;
     transform: none;
+}
+
+/* POSICIÓN Y OPACIDAD DE IMAGEN PRINCIPAL */
+
+.hero-overlay {
+  position: relative;
+  min-height: 100vh;
+  background-image: url('images/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.hero-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 1);/* ← AJUSTA ESTA OPACIDAD de 0 a 1*/
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  animation: zoomFadeBg 3.5s ease-out forwards;
+  transform: scale(1.05); /* punto final */
+  opacity: 0;
+}
+
+@keyframes zoomFadeBg {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.hero-overlay .container {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* 🧠 Alternativas de intensidad:
+0 1px 3px rgba(0,0,0,0.3) → muy sutil
+
+0 2px 6px rgba(0,0,0,0.6) → buena para fondos complejos (recomendada)
+
+0 4px 10px rgba(0,0,0,0.8) → fuerte, más visible pero menos sutil */
+
+
+/* animación de HERO SECTION */
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide {
+  opacity: 0;
+  animation: fadeSlideUp 1s ease-out forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.3s;
+}
+
+.bienvenida-destacada {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
