@@ -1,66 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invitación XV Sofía</title>
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Invitación Boda</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <header class="reveal">
-        <img src="header.png" alt="XV Sofía" class="header-image" />
-        <h1>XV Sofía</h1>
-        <p>¡Estás invitado!<br>15 de Julio de 2025</p>
-    </header>
+<!-- HERO principal -->
+<section class="hero-overlay d-flex align-items-center justify-content-center text-white">
+    <div class="container text-center position-relative z-1">
+        <h1 class="display-4 animate-fade-slide">Nombre Novia & Nombre Novio</h1>
+        <h1 class="lead animate-fade-slide delay-1">15 de Julio de 2025 · 18:00 hrs</h1>
+    </div>
+</section>
 
-    <section class="reveal detalles">
-        <h2>Detalles del Evento</h2>
-        <div class="grid-detalles">
-            <div class="detalle">
-                <img src="ceremonia.png" alt="Ceremonia" />
-                <p><strong>Ceremonia:</strong><br>5:00 p.m.<br>Parroquia Santa María</p>
-            </div>
-            <div class="detalle">
-                <img src="recepcion.png" alt="Recepción" />
-                <p><strong>Recepción:</strong><br>7:00 p.m.<br>Salón Jardín Real</p>
-            </div>
-            <div class="detalle">
-                <img src="direccion.png" alt="Dirección" />
-                <p><strong>Dirección:</strong><br>Av. Central #456<br>Ciudad de México</p>
-            </div>
+<!-- sección bienvenida + carruel -->
+<section class="reveal d-flex flex-column align-items-center bg-white" style="height: 100vh; padding-top: 2vh; padding-bottom: 2vh;">
+  <!-- Bienvenida personalizada -->
+    <div class="container text-center mb-2">
+      <p class="fw-bold display-6 mb-1 bienvenida-destacada" style="color: #2f2f2f;">
+        Querido(a) <span id="nombreInvitado" style="font-family: 'Playfair Display', serif;">Invitado</span>
+      </p>
+      <p class="text-muted mb-0" style="font-size: 1rem;">Has sido invitado a nuestra boda. Revisa los detalles y confirma tu asistencia al final.</p>
+    </div>
+
+  <!-- Carrusel -->
+  <div class="container flex-grow-1 d-flex align-items-center" style="height: auto; overflow: hidden;">
+    <div id="carouselFotos" class="carousel slide w-100 h-100" data-bs-ride="carousel">
+      <div class="carousel-inner h-100">
+        <div class="carousel-item active h-100">
+          <img src="images/carrusel1.jpg" class="d-block w-100 h-100 object-fit-contain rounded" alt="Foto 1">
         </div>
-    </section>
-
-    <section class="reveal" id="invitado">
-        <p class="mensaje-invitado"></p>
-        <button id="whatsappButton" class="boton">Confirmar Asistencia</button>
-        <p></p>
-        <button id="acceptLessButton" class="boton secondary-button">Aceptar menos invitaciones</button>
-        <p></p>
-        <button id="declineButton" class="boton decline-button">No podré asistir</button> 
-        <div id="lessPassesContainer" style="display: none; margin-top: 15px;">
-            <p>¿Cuántos pases confirmas (máximo <span id="maxPasesDisplay"></span>)?</p>
-            <input type="number" id="numPasesInput" min="1" value="1" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc; width: 100px; text-align: center;">
-            <button id="confirmLessPassesButton" class="boton small-button">Confirmar pases seleccionados</button>
+        <div class="carousel-item h-100">
+          <img src="images/carrusel2.jpg" class="d-block w-100 h-100 object-fit-contain rounded" alt="Foto 2">
         </div>
-    </section>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev" style="top: 50%; transform: translateY(-50%);">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next" style="top: 50%; transform: translateY(-50%);">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </div>
+</section>
 
-    <section class="reveal">
-        <h2>Tu lugar es importante</h2>
-        <p class="frase">"Gracias por acompañarme en este momento tan especial."</p>
-    </section>
+<!-- Detalles del evento -->
+<section class="reveal py-5 bg-light">
+  <div class="container text-center">
+    <h2 class="mb-4">Detalles del Evento</h2>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <img src="images/prueba.png" class="img-fluid rounded mb-2" alt="Ceremonia"> <!-- IMAGEN: CEREMONIA -->
+        <p class="fw-bold">Ceremonia<br><small>5:00 p.m.<br>Parroquia Santa María</small></p>
+      </div>
+      <div class="col-md-3">
+        <img src="images/prueba.png" class="img-fluid rounded mb-2" alt="Recepción"> <!-- IMAGEN: RECEPCIÓN -->
+        <p class="fw-bold">Recepción<br><small>7:00 p.m.<br>Salón Jardín Real</small></p>
+      </div>
+      <div class="col-md-3">
+        <a href="#" target="_blank">
+          <img src="images/prueba.png" class="img-fluid rounded mb-2" alt="Mapa 1"> <!-- IMAGEN: MAPA CEREMONIA -->
+          <p class="text-muted">Ubicación Ceremonia</p>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="#" target="_blank">
+          <img src="images/prueba.png" class="img-fluid rounded mb-2" alt="Mapa 2"> <!-- IMAGEN: MAPA RECEPCIÓN -->
+          <p class="text-muted">Ubicación Recepción</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section class="reveal">
-        <h2>¿Cómo llegar?</h2>
-        <img src="mapa.png" alt="Mapa" class="section-image" />
-    </section>
+<!-- Vestimenta y niños -->
+<section class="reveal text-center py-5">
+  <div class="container">
+    <h3>Código de Vestimenta</h3>
+    <div class="row justify-content-center">
+      <div class="col-6 col-md-3">
+        <img src="images/prueba.png" class="img-fluid rounded" alt="Hombre"> <!-- IMAGEN: VESTIMENTA CABALLERO -->
+        <p>Formal Caballero</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <img src="images/prueba.png" class="img-fluid rounded" alt="Mujer"> <!-- IMAGEN: VESTIMENTA DAMA -->
+        <p>Formal Dama</p>
+      </div>
+    </div>
+    <p class="mt-3"><strong>No se permite el acceso a niños</strong></p>
+  </div>
+</section>
 
-    <footer class="reveal">
-        <p>Con cariño, Sofía y familia</p>
-    </footer>
+<!-- Mesa de regalos -->
+<section class="reveal text-center py-5 bg-light">
+  <div class="container">
+    <h3>Mesa de Regalos</h3>
+    <p>Consulta nuestras opciones en línea</p>
+    <div class="row justify-content-center">
+      <div class="col-4 col-md-2">
+        <a href="#" target="_blank">
+          <img src="images/prueba.png" class="img-fluid" alt="Amazon"> <!-- IMAGEN: AMAZON -->
+        </a>
+      </div>
+      <div class="col-4 col-md-2">
+        <a href="#" target="_blank">
+          <img src="images/prueba.png" class="img-fluid" alt="Liverpool"> <!-- IMAGEN: LIVERPOOL -->
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script src="script.js"></script>
+<!-- Confirmación de asistencia -->
+<section class="reveal text-center py-5">
+  <div class="container">
+    <h3>¿Deseas confirmar tu asistencia?</h3>
+    <p class="mensaje-invitado"></p>
+    <div class="d-grid gap-2 d-md-block">
+      <button class="btn btn-success me-2" id="whatsappButton">Confirmar</button>
+      <button class="btn btn-primary me-2" id="acceptLessButton">Confirmar Menos</button>
+      <button class="btn btn-outline-danger" id="declineButton">No podré asistir</button>
+    </div>
+    <div class="mt-3" id="lessPassesContainer" style="display: none;">
+      <p>¿Cuántos pases confirmas? Máximo: <span id="maxPasesDisplay"></span></p>
+      <input type="number" id="numPasesInput" min="1" class="form-control w-25 mx-auto">
+      <button class="btn btn-primary mt-2" id="confirmLessPassesButton">Confirmar selección</button>
+    </div>
+  </div>
+</section>
 
+<footer class="py-4 text-center text-muted small">
+  <div class="container">
+    <p>Con cariño, Nombre de los novios.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
