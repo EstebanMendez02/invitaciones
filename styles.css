@@ -95,7 +95,7 @@ footer {
 .hero-overlay {
   position: relative;
   min-height: 100vh;
-  background-image: url('images/hero.jpg');
+  background-image: url('hero.jpg');
   background-size: cover;
   background-position: center;
   overflow: hidden;
