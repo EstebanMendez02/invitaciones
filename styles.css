@@ -1,101 +1,108 @@
+:root {
+  --rosa-claro: #C97A7E;
+  --rosa-oscuro: #A0324A;
+  --vino-profundo: #6A0F26;
+  --camel: #B6906D;
+  --gris-suave: #C8BFB5;
+  --verde-oliva: #6F7F52;
+}
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #fffafc;
-    color: #333;
-    line-height: 1.6;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--gris-suave);
+  color: #2f2f2f;
+  line-height: 1.6;
 }
 
 header {
-    text-align: center;
-    padding: 2rem 1rem;
-    background-color: #f7d6e0;
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #f7d6e0;
 }
 
 header h1 {
-    font-size: 2.5rem;
-    margin: 1rem 0 0.5rem;
-    color: #c2185b;
+  font-size: 2.5rem;
+  margin: 1rem 0 0.5rem;
+  color: #c2185b;
 }
 
 .header-image {
-    max-width: 100%;
-    border-radius: 1rem;
+  max-width: 100%;
+  border-radius: 1rem;
 }
 
 section {
-    padding: 2rem 1.5rem;
-    text-align: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
 }
 
 .grid-detalles {
-    display: flex;
-    justify-content: space-around;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
 .detalle {
-    flex: 1 1 200px;
-    text-align: center;
+  flex: 1 1 200px;
+  text-align: center;
 }
 
 .detalle img {
-    width: 100%;
-    max-width: 200px;
-    border-radius: 1rem;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 200px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
 }
 
 .section-image {
-    max-width: 90%;
-    border-radius: 1rem;
-    margin-top: 1rem;
+  max-width: 90%;
+  border-radius: 1rem;
+  margin-top: 1rem;
 }
 
 .boton {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    margin-top: 1rem;
-    background-color: #c2185b;
-    color: white;
-    text-decoration: none;
-    border-radius: 1.5rem;
-    font-weight: bold;
-    transition: background-color 0.3s;
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  background-color: #c2185b;
+  color: white;
+  text-decoration: none;
+  border-radius: 1.5rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 .boton:hover {
-    background-color: #ad1457;
+  background-color: #ad1457;
 }
 
 footer {
-    background-color: #f7d6e0;
-    padding: 1rem;
-    text-align: center;
+  background-color: var(--rosa-claro);
+  color: white;
+  padding: 1rem;
+  text-align: center;
 }
 
 .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 3s ease-out, transform 0.6s ease-out;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 3s ease-out, transform 0.6s ease-out;
 }
 
 .reveal.visible {
-    opacity: 1;
-    transform: none;
+  opacity: 1;
+  transform: none;
 }
-
-/* POSICIÓN Y OPACIDAD DE IMAGEN PRINCIPAL */
 
 .hero-overlay {
   position: relative;
   min-height: 100vh;
-  background-image: url('hero.jpg');
+  background-image: url('images/hero.jpg');
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -105,13 +112,13 @@ footer {
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 1);/* ← AJUSTA ESTA OPACIDAD de 0 a 1*/
+  background-color: rgba(0, 0, 0, 1);
   background-image: inherit;
   background-size: cover;
   background-position: center;
   z-index: 0;
   animation: zoomFadeBg 3.5s ease-out forwards;
-  transform: scale(1.05); /* punto final */
+  transform: scale(1.05);
   opacity: 0;
 }
 
@@ -129,16 +136,6 @@ footer {
 .hero-overlay .container {
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
-
-/* 🧠 Alternativas de intensidad:
-0 1px 3px rgba(0,0,0,0.3) → muy sutil
-
-0 2px 6px rgba(0,0,0,0.6) → buena para fondos complejos (recomendada)
-
-0 4px 10px rgba(0,0,0,0.8) → fuerte, más visible pero menos sutil */
-
-
-/* animación de HERO SECTION */
 
 @keyframes fadeSlideUp {
   0% {
@@ -162,4 +159,91 @@ footer {
 
 .bienvenida-destacada {
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Nuevos estilos elegantes */
+.titulo-hero {
+  font-family: 'Great Vibes', cursive;
+  font-size: 5rem;
+  color: whitesmoke;
+}
+
+
+.cursiva {
+  font-family: 'Great Vibes', cursive;
+  font-size: 5rem;
+  color: var(--vino-profundo);
+}
+
+/* Estilo elegante para botones principales */
+.btn-elegante {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  padding: 0.6rem 2rem;
+  border-radius: 2rem;
+  font-weight: normal;
+  transition: all 0.3s ease-in-out;
+  text-transform: none;
+  box-shadow: none;
+}
+
+/* Confirmar (botón negro elegante) */
+.btn-elegante.btn-primary {
+  background-color: black;
+  color: white;
+  border: none;
+}
+.btn-elegante.btn-primary:hover {
+  background-color: #333;
+}
+
+/* Confirmar menos invitados (outline blanco) */
+.btn-elegante.btn-outline-secondary {
+  background-color: transparent;
+  border: 2px solid black;
+  color: black;
+}
+.btn-elegante.btn-outline-secondary:hover {
+  background-color: black;
+  color: white;
+}
+
+/* No puedo asistir (link elegante) */
+.btn-link-elegante {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: black;
+  text-decoration: underline;
+  transition: color 0.3s;
+  display: inline-block;
+  margin-top: 1rem;
+}
+.btn-link-elegante:hover {
+  color: #6A0F26;
+}
+
+.img-fluid {
+  border: 2px solid var(--verde-oliva);
+  border-radius: 1rem;
+  transition: transform 0.3s ease;
+}
+.img-fluid:hover {
+  transform: scale(1.02);
+}
+
+.carousel-inner {
+  max-height: 70vh; /* limita la altura máxima visible del carrusel */
+  overflow: hidden;
+}
+
+.carousel-item img {
+  width: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  max-height: 70vh;
 }
