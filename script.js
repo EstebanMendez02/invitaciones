@@ -89,7 +89,7 @@ async function initializeInvitationPage() {
                         if (btn.id === 'whatsappButton' || btn.id === 'acceptLessButton' || btn.id === 'declineButton') {
                             btn.style.display = 'inline-block'; // Mantener visible el botón que se está procesando o el general
                             if (btn.id === 'whatsappButton' || btn.id === 'declineButton') { // Solo actualiza el texto del botón presionado
-                                btn.textContent = message;
+                                btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${message}`;
                             }
                         }
                     }
@@ -270,17 +270,17 @@ async function initializeInvitationPage() {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('¡Confirmación exitosa! ' + result.message);
+                    showToast('¡Confirmación exitosa! ' + result.message);
                     window.open(whatsappLinkFull, '_blank');
                     manageActionButtons('finalStateConfirmed', "ASISTENCIA CONFIRMADA", '#4CAF50'); // Verde
                 } else {
-                    alert('Error en la confirmación: ' + result.message);
+                    showToast('Error en la confirmación: ' + result.message, false);
                     console.error('Error del Apps Script:', result.message);
                     manageActionButtons('errorState'); // Restaurar botones a estado original
                 }
             } catch (error) {
                 console.error('Error al enviar el registro o procesar la respuesta:', error);
-                alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
+                showToast('Error inesperado al confirmar.', false);
                 manageActionButtons('errorState'); // Restaurar botones a estado original
             }
         };
@@ -317,18 +317,18 @@ async function initializeInvitationPage() {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('¡Confirmación exitosa! ' + result.message);
+                    showToast('¡Confirmación exitosa! ' + result.message);
                     const mensajeWhatsAppLess = `Confirmo mi asistencia a los XV de Sofia. Soy ${currentGuestName} y confirmo ${confirmedPases} pases.`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(mensajeWhatsAppLess)}`, '_blank');
                     manageActionButtons('finalStateConfirmed', "ASISTENCIA CONFIRMADA", '#4CAF50'); // Verde
                 } else {
-                    alert('Error en la confirmación: ' + result.message);
+                    showToast('Error en la confirmación: ' + result.message, false);
                     console.error('Error del Apps Script:', result.message);
                     manageActionButtons('errorState'); // Restaurar botones a estado original
                 }
             } catch (error) {
                 console.error('Error al enviar el registro o procesar la respuesta:', error);
-                alert('Ocurrió un error inesperado al intentar confirmar. Por favor, inténtalo de nuevo.');
+                showToast('Error inesperado al confirmar.', false);
                 manageActionButtons('errorState'); // Restaurar botones a estado original
             }
         };
@@ -345,20 +345,31 @@ async function initializeInvitationPage() {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('¡Gracias! Tu declinación ha sido registrada. ' + result.message);
+                    showToast('Tu declinación ha sido registrada.');
                     manageActionButtons('finalStateDeclined', "ASISTENCIA RECHAZADA", '#f44336'); // Rojo
                 } else {
-                    alert('Error al registrar la declinación: ' + result.message);
+                    showToast('Error al registrar la declinación.', false);
                     console.error('Error del Apps Script:', result.message);
                     manageActionButtons('errorState'); // Restaurar botones a estado original
                 }
             } catch (error) {
                 console.error('Error de red al registrar la declinación:', error);
-                alert('Ocurrió un error inesperado al intentar registrar tu declinación. Por favor, inténtalo de nuevo.');
+                showToast('Error inesperado al registrar declinación.', false);
                 manageActionButtons('errorState'); // Restaurar botones a estado original
             }
         };
     }
+}
+
+
+function showToast(message, success = true) {
+  const toastElement = document.getElementById('liveToast');
+  const toastBody = document.getElementById('toastMessage');
+  toastBody.textContent = message;
+  toastElement.classList.remove('bg-success', 'bg-danger');
+  toastElement.classList.add(success ? 'bg-success' : 'bg-danger');
+  const toast = new bootstrap.Toast(toastElement);
+  toast.show();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
