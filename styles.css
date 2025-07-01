@@ -34,8 +34,9 @@ header h1 {
 }
 
 section {
-  padding: 2rem 1.5rem;
-  text-align: center;
+  min-height: calc(100vh - 80px);
+  padding-top: 10vh;
+  padding-bottom: 10vh;
 }
 
 .grid-detalles {
