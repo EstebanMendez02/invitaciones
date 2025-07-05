@@ -129,7 +129,7 @@ footer {
 .hero-overlay {
   position: relative;
   min-height: 100svh;
-  background-image: url('images/hero.webp');
+  background-image: url('hero.webp');
   background-size: cover;
   background-position: center;
   overflow: hidden;
