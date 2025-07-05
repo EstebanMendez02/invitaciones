@@ -1,18 +1,18 @@
 :root {
-  --rosa-claro: #C97A7E;
-  --rosa-oscuro: #A0324A;
-  --vino-profundo: #6A0F26;
-  --camel: #B6906D;
-  --gris-suave: #C8BFB5;
-  --verde-oliva: #6F7F52;
+  --blanco: #FDFBF6; /* FONDO PRINCIPAL */
+  --verde: #6D8B74; /* BOTONES, ICONOS, ACENTOS */
+  --oro: #D4AF37; /* DETALLES DECORATIVOS, TITULOS, HOVER DE BOTONES */
+  --gris: #888888; /* TEXTO SECUNDARIO, BORDES FINOS */
+  --negro: #000000; /* Texto Principal */
+  --oroDos: #FFEAA6;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
+  /* font-family: 'Segoe UI', sans-serif; */
   margin: 0;
   padding: 0;
-  background-color: var(--gris-suave);
-  color: #2f2f2f;
+  background-color: var(--blanco);
+  /*color: #2f2f2f;*/
   line-height: 1.6;
 }
 
@@ -36,6 +36,33 @@ header h1 {
 section {
   padding: 4rem 1.5rem;
   scroll-margin-top: 6rem;
+}
+
+.titulo {
+  font-family: 'Prata', serif;
+  color: var(--negro);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.subtitulo {
+  font-family: 'Prata', serif;
+  color: var(--negro);
+  font-size: 1.3rem;
+}
+
+.descripcion {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--negro);
+  font-size: 1.5rem;
+}
+
+.descripcionDetalles {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--negro);
+  font-size: 1.3rem;
+  font-weight: 200;
+  font-style: italic;
 }
 
 .grid-detalles {
@@ -82,7 +109,7 @@ section {
 }
 
 footer {
-  background-color: var(--rosa-claro);
+  background-color: var(--verde);
   color: white;
   padding: 1rem;
   text-align: center;
@@ -102,7 +129,7 @@ footer {
 .hero-overlay {
   position: relative;
   min-height: 100svh;
-  background-image: url('images/hero.jpg');
+  background-image: url('images/hero.webp');
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -118,7 +145,7 @@ footer {
   background-position: center;
   z-index: 0;
   animation: zoomFadeBg 3.5s ease-out forwards;
-  transform: scale(1.05);
+  transform: scale(0.5);
   opacity: 0;
 }
 
@@ -134,7 +161,7 @@ footer {
 }
 
 .hero-overlay .container {
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 6px var(--negro);
 }
 
 @keyframes fadeSlideUp {
@@ -157,7 +184,7 @@ footer {
   animation-delay: 0.3s;
 }
 
-.bienvenida-destacada {
+.sombra {
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
@@ -168,14 +195,20 @@ button {
 /* Nuevos estilos elegantes */
 .titulo-hero {
   font-family: 'Great Vibes', cursive;
-  font-size: 5rem;
-  color: whitesmoke;
+  font-size: 7rem;
+  color: var(--oroDos);
+}
+
+.subtituloHero {
+  font-family: 'Great Vibes', cursive;
+  font-size: 4rem;
+  color: var(--oroDos);
 }
 
 .cursiva {
   font-family: 'Great Vibes', cursive;
   font-size: 5rem;
-  color: var(--vino-profundo);
+  color: var(--oro);
 }
 
 /* Estilo elegante para botones principales */
@@ -192,23 +225,24 @@ button {
 
 /* Confirmar (botón negro elegante) */
 .btn-elegante.btn-primary {
-  background-color: black;
+  background-color: var(--verde);
   color: white;
-  border: none;
+  border: 3px solid var(--gris);
 }
 .btn-elegante.btn-primary:hover {
-  background-color: #333;
+  background-color: var(--oroDos);
+  color: var(--verde);
 }
 
 /* Confirmar menos invitados (outline blanco) */
 .btn-elegante.btn-outline-secondary {
-  background-color: transparent;
-  border: 2px solid black;
-  color: black;
+  background-color: var(--verde);
+  border: 2px solid var(--gris);
+  color: white;
 }
 .btn-elegante.btn-outline-secondary:hover {
-  background-color: black;
-  color: white;
+  background-color: var(--oroDos);
+  color: var(--verde);
 }
 
 /* No puedo asistir (link elegante) */
@@ -222,16 +256,17 @@ button {
   margin-top: 1rem;
 }
 .btn-link-elegante:hover {
-  color: #6A0F26;
+  color: var(--verde);
 }
 
 .img-fluid {
-  border: 2px solid var(--verde-oliva);
+  /*border: 2px solid var(--gris);*/
   border-radius: 1rem;
   transition: transform 0.3s ease;
 }
 .img-fluid:hover {
   transform: scale(1.02);
+  background-color: var(--oroDos);
 }
 
 .carousel-inner {
